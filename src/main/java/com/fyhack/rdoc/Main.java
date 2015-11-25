@@ -2,6 +2,7 @@ package com.fyhack.rdoc;
 
 
 import com.fyhack.rdoc.vo.PersonnelInfo;
+import com.hankcs.hanlp.HanLP;
 import com.hankcs.textrank.TextRankKeyword;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
@@ -9,6 +10,7 @@ import org.apache.poi.xssf.usermodel.*;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Main
@@ -37,6 +39,7 @@ public class Main {
         SearchFile searchFiles = new SearchFile(file_path,file_type);
         ArrayList<PersonnelInfo> list = (ArrayList<PersonnelInfo>) searchFiles.startSearchContent();
 
+        //输出excel
         writeXSL(list);
 
         // 检测词频
@@ -45,6 +48,9 @@ public class Main {
             stringBuffer.append(p.getAudit_opinion());
         }
         rankKeyword(stringBuffer.toString());
+
+        List<String> phraseList = HanLP.extractPhrase(stringBuffer.toString(), 20);
+        System.out.println("前20短语: "+phraseList);
     }
 
     private static void writeXSL(ArrayList<PersonnelInfo> list){
