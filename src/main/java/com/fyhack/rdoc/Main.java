@@ -12,9 +12,8 @@ public class Main {
     public static void main(String args[]){
         System.out.print("本机系统编码:" + System.getProperty("file.encoding") + "\n");
 
-        SearchFile searchFiles = new SearchFile("C:\\Users\\elc_simayi\\Desktop\\5","姓名","doc");
+        SearchFile searchFiles = new SearchFile("C:\\Users\\elc_simayi\\Desktop\\审核2","doc");
         searchFiles.startSearchContent();
-
 
     }
 }

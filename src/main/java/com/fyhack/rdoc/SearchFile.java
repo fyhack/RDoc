@@ -1,6 +1,7 @@
 package com.fyhack.rdoc;
 
 
+import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.xssf.usermodel.*;
 
 import java.io.*;
@@ -32,13 +33,11 @@ public class SearchFile {
 
     /**构造函数，
      @param filename 要查找目录的对象
-     @param findtxt    要查找的关键字
      @param fileType 要查找的文件类型
      */
-    public SearchFile( String  filename ,String findtxt, String fileType )
+    public SearchFile( String  filename , String fileType )
     {
         this.filename=filename;
-        this.findtxt=findtxt;
         this.fileType=fileType;
     }
 
@@ -117,7 +116,7 @@ public class SearchFile {
         String name = text.substring(name_start, name_end);
         name = htmlRemoveTag(name);
         System.out.println(name);
-        writeXSL(columns,name);
+        writeXSL(columns, name);
 
             //TODO 尾部判断
         return text = text.substring(name_end);
@@ -132,17 +131,22 @@ public class SearchFile {
     {
         System.out.println(f.getName() + ":");
 
-//        String text = getTextContent(f);
-//
-//        findInfo(text);
-
-//        System.out.println(text);
-
         columns = 0;
         // 在指定的索引处创建一行
         row = sheet.createRow(totalFileCount);
-        test(f);
-        totalFileCount++; //搜索到的文件数加1
+        String text = getTextContentByExtractors(f);
+        searchInfo(text);
+
+        System.out.println("end.");
+
+//        findInfo(text);
+//        System.out.println(text);
+
+//        columns = 0;
+//        // 在指定的索引处创建一行
+//        row = sheet.createRow(totalFileCount);
+//        test(f);
+//        totalFileCount++; //搜索到的文件数加1
     }
 
     private void findInfo(String text){
@@ -224,6 +228,37 @@ public class SearchFile {
         System.out.print("\n");
     }
 
+    private void searchInfo(String text){
+        System.out.print("姓名： ");
+        columns = 2;
+        String office_start_c = "姓名：";
+        String office_end_c = "工作单位及职务：";
+        text = printFindtxt(text,office_start_c,office_end_c);
+
+        System.out.print("工作单位及职务：");
+        columns = 3;
+        String site_start_c = "工作单位及职务：";
+        String site_end_c = "级别：";
+        text = printFindtxt(text,site_start_c,site_end_c);
+
+//            String depart_start_c = "应聘部门：<b\n" +
+//                    "                            style='mso-bidi-font-weight:normal'>";
+//            String depart_end_c = "</b>";
+//            text = printFindtxt(text,depart_start_c,depart_end_c);
+
+        System.out.print("级别： ");
+        columns = 1;
+        String name_start_c = "级别：";
+        String name_end_c = "项目";
+        text = printFindtxt(text,name_start_c,name_end_c);
+
+        System.out.print("审核意见: ");
+        columns = 4;
+        String introduction_start_c = "见\t";
+        String introduction_end_c = "初审人";
+        text = printFindtxt(text,introduction_start_c,introduction_end_c);
+    }
+
     public void test(File f){
         try {
 
@@ -299,6 +334,25 @@ public class SearchFile {
 
         System.out.println("-----------------------------------");
         System.out.print("\n");
+    }
+
+    public String getTextContentByExtractors(File f){
+        FileInputStream in = null;
+        String text = null;
+        try {
+            in = new FileInputStream(f);
+            WordExtractor extractor = null;
+            // 创建WordExtractor
+            extractor = new WordExtractor(in);
+            // 对doc文件进行提取
+            text = extractor.getText();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return text;
     }
 
     public String getTextContent(File f){
