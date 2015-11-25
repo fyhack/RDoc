@@ -1,10 +1,12 @@
 package com.fyhack.rdoc;
 
 
+import com.fyhack.rdoc.vo.PersonnelInfo;
 import org.apache.poi.hwpf.extractor.WordExtractor;
-import org.apache.poi.xssf.usermodel.*;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,20 +18,14 @@ import java.util.regex.Pattern;
  * @since 2015/11/5
  */
 public class SearchFile {
-    private File f=null;     //要查找的目录对象
+    private boolean DEBUG = false;
     private String filename=null;   //要查找的目录路径
     private BufferedWriter bw=null;
-    private String findtxt=null;    //要查找的文本内容
     private String fileType=null;   //要查找的文件类型
-    private int totalFileCount=0;   //共搜索的文件数
-    private int findedFileCount=0;  //搜索到有用的文件数
-    private int findContentCount=0; //搜索到的有用信息数目
-    private int columns = 0;    //用于写入xsl的列号
+    private int count =0;
 
-    XSSFWorkbook workBook;
-    XSSFSheet sheet;
-    XSSFRow row;
-    XSSFCell code;
+    private ArrayList<PersonnelInfo> list;  //
+
 
     /**构造函数，
      @param filename 要查找目录的对象
@@ -41,45 +37,24 @@ public class SearchFile {
         this.fileType=fileType;
     }
 
-    private void writeXSL(int l , String text){
-        // 在指定的索引处创建一列（单元格）
-        code = row.createCell(l);
-        // 定义单元格为字符串类型
-        code.setCellType(XSSFCell.CELL_TYPE_STRING);
-
-        // 在单元格输入内容
-        XSSFRichTextString codeContent = new XSSFRichTextString(getFormatText(text));
-        code.setCellValue(codeContent);
-
-    }
-
     //暴露的公共接口，开始在指定的目录中搜索关键字
-    public void startSearchContent()
+    public List<PersonnelInfo> startSearchContent()
     {
-        // 创建工作薄
-        workBook = new XSSFWorkbook();
-        // 在工作薄中创建一工作表
-        sheet = workBook.createSheet();
-
+        list = new ArrayList<PersonnelInfo>();
+        count = 0;
         try
         {
-            f=new File( filename );
-            listFile( f );
-            System.out.println("搜索完毕");
-
-            FileOutputStream fos = new FileOutputStream("C:/Users/elc_simayi/Desktop/hos.xlsx");
-            workBook.write(fos);
-            fos.flush();
-            //操作结束，关闭流
-            fos.close();
+            File f=new File( filename );
+            listFile(f);
+            System.out.println("检索程序完毕: \t查找到."+fileType+"文件数目"+count+",检索出有效名单数目"+list.size());
         }
         catch( Exception e)
         {
             e.printStackTrace();
-            System.out.println("搜索出错！！！");
+            System.out.println("检索程序出错！！！");
         }
 
-
+        return list;
     }
 
     /*
@@ -100,240 +75,87 @@ public class SearchFile {
                 if( files[x].getName().endsWith( fileType ))
                 {
                     FindTxt( files[x]);
+                    count++;
                 }
             }
         }
     }
 
-    private String printFindtxt(String text , String start_c , String end_c){
-        int name_start = text.indexOf(start_c)+start_c.length();
-        if(name_start==-1)
-            return text;
-        int name_end = text.indexOf(end_c,name_start);
-        if(name_end==-1)
-            return text;
+    private TmpString printFindtxt(TmpString tmpString , String start_c , String end_c){
+        TmpString tmpString1 = new TmpString();
 
-        String name = text.substring(name_start, name_end);
-        name = htmlRemoveTag(name);
-        System.out.println(name);
-        writeXSL(columns, name);
+        int name_start = tmpString.text.indexOf(start_c)+start_c.length();
+        if(name_start==-1)
+            return tmpString;
+        int name_end = tmpString.text.indexOf(end_c, name_start);
+        if(name_end==-1)
+            return tmpString;
+
+        String value = tmpString.text.substring(name_start, name_end);
+        value = getFormatText(htmlRemoveTag(value));
+
+        //过滤冒号
+        int colon = value.indexOf("：");
+        if (colon == -1)
+            colon = value.indexOf(":");
+        if (colon!=-1)
+            value = value.substring(colon+1);
+        tmpString1.value = value;
+        if(DEBUG) System.out.println(tmpString1.value);
 
             //TODO 尾部判断
-        return text = text.substring(name_end);
+        tmpString1.text = tmpString.text.substring(name_end);
+
+        return tmpString1;
     }
 
-    /*
-    从文件中搜索制定的内容，分下面几步
-    1.使用自定义的山寨版LineNumberReader类，读取文件的每一行
-    2.
-    */
     private void FindTxt(File f )
     {
-        System.out.println(f.getName() + ":");
-
-        columns = 0;
-        // 在指定的索引处创建一行
-        row = sheet.createRow(totalFileCount);
+        if(DEBUG) System.out.println(f.getName() + ":");
         String text = getTextContentByExtractors(f);
-        searchInfo(text);
-
-        System.out.println("end.");
-
-//        findInfo(text);
 //        System.out.println(text);
-
-//        columns = 0;
-//        // 在指定的索引处创建一行
-//        row = sheet.createRow(totalFileCount);
-//        test(f);
-//        totalFileCount++; //搜索到的文件数加1
-    }
-
-    private void findInfo(String text){
-
-        System.out.print("应聘职位: ");
-        String office_start_c = "应聘职位：";
-        String office_end_c = "\n";
-        text = printFindtxt(text,office_start_c,office_end_c);
-
-        System.out.print("工作地点: ");
-        String site_start_c = "工作地点：";
-        String site_end_c = "\n";
-        text = printFindtxt(text,site_start_c,site_end_c);
-
-        System.out.print("应聘部门： ");
-        String depart_start_c = "应聘部门：" ;
-        String depart_end_c = "\n" +
-                "                            \n" +
-                "            \n" +
-                "                \n" +
-                "                        \n" +
-                "            \n" +
-                "            \n" +
-                "               ";
-        text = printFindtxt(text,depart_start_c,depart_end_c);
-
-        text = text.substring(text.indexOf("更新日期"));
-
-        System.out.print("姓名：");
-        String name_start_c = "\n" +
-                "            \n" +
-                "        \n" +
-                "    \n" +
-                "\n" +
-                "\n" +
-                "\n" +
-                "    \n" +
-                "        \n" +
-                "            \n" +
-                "                ";
-        String name_end_c = "                \n" +
-                "                \n" +
-                "            \n" +
-                "                \n";
-        text = printFindtxt(text,name_start_c,name_end_c);
-
-        System.out.print("个人信息: ");
-        String introduction_start_c = "                \n" +
-                "                \n" +
-                "            \n" +
-                "                \n";
-        String introduction_end_c = "验";
-        text = printFindtxt(text,introduction_start_c,introduction_end_c);
-
-        System.out.print("手机: ");
-        String tel_start_c = "手机：";
-        String tel_end_c = "电子邮件";
-        text = printFindtxt(text, tel_start_c, tel_end_c);
-
-        System.out.print("工作经历: ");
-        String workhistory1_start_c = "工作经历";
-        String workhistory1_end_c = "教育背景";
-        text = printFindtxt(text,workhistory1_start_c,workhistory1_end_c);
-
-//        String workhistory2_start_c = "<span style='font-family:SimSun;mso-ascii-font-family:Calibri;mso-hansi-font-family: Calibri'>";
-//        String workhistory2_end_c = "</span>";
-//        text = printFindtxt(text, workhistory2_start_c, workhistory2_end_c);
-
-        System.out.print("教育背景: ");
-        String educational1_start_c = "教育背景";
-        String educational1_end_c = "专业描述";
-        text = printFindtxt(text,educational1_start_c,educational1_end_c);
-
-//        String educationa2_start_c = "<span style='font-family:SimSun;  mso-ascii-font-family:Calibri;mso-hansi-font-family:Calibri'>";
-//        String educationa2_end_c = "</span>";
-//        text = printFindtxt(text,educationa2_start_c,educationa2_end_c);
-
-        System.out.println("-----------------------------------");
-        System.out.print("\n");
+        searchInfo(text);
+        if(DEBUG) System.out.println("end.");
     }
 
     private void searchInfo(String text){
-        System.out.print("姓名： ");
-        columns = 2;
-        String office_start_c = "姓名：";
-        String office_end_c = "工作单位及职务：";
-        text = printFindtxt(text,office_start_c,office_end_c);
+        TmpString tmpString = new TmpString(text);
+        PersonnelInfo personnelInfo = null;
 
-        System.out.print("工作单位及职务：");
-        columns = 3;
-        String site_start_c = "工作单位及职务：";
-        String site_end_c = "级别：";
-        text = printFindtxt(text,site_start_c,site_end_c);
+        if(DEBUG) System.out.print("姓名：");
+        String office_start_c = "姓名";
+        String office_end_c = "工作单位及职务";
+        tmpString = printFindtxt(tmpString,office_start_c,office_end_c);
+        if (tmpString.value!=null)
+            personnelInfo = new PersonnelInfo();
+        if (personnelInfo!=null)
+            personnelInfo.name = tmpString.value;
 
-//            String depart_start_c = "应聘部门：<b\n" +
-//                    "                            style='mso-bidi-font-weight:normal'>";
-//            String depart_end_c = "</b>";
-//            text = printFindtxt(text,depart_start_c,depart_end_c);
 
-        System.out.print("级别： ");
-        columns = 1;
-        String name_start_c = "级别：";
+
+        if(DEBUG) System.out.print("工作单位及职务：");
+        String site_start_c = "工作单位及职务";
+        String site_end_c = "级别";
+        tmpString = printFindtxt(tmpString,site_start_c,site_end_c);
+        if (personnelInfo!=null)
+            personnelInfo.work_units_and_positions = tmpString.value;
+
+        if(DEBUG) System.out.print("级别：");
+        String name_start_c = "级别";
         String name_end_c = "项目";
-        text = printFindtxt(text,name_start_c,name_end_c);
+        tmpString = printFindtxt(tmpString,name_start_c,name_end_c);
+        if (personnelInfo!=null)
+            personnelInfo.work_level = tmpString.value;
 
-        System.out.print("审核意见: ");
-        columns = 4;
+        if(DEBUG) System.out.print("审核意见: ");
         String introduction_start_c = "见\t";
         String introduction_end_c = "初审人";
-        text = printFindtxt(text,introduction_start_c,introduction_end_c);
-    }
+        tmpString = printFindtxt(tmpString,introduction_start_c,introduction_end_c);
+        if (personnelInfo!=null)
+            personnelInfo.audit_opinion = tmpString.value;
 
-    public void test(File f){
-        try {
-
-            FileReader fileReader = new FileReader(f);
-            char[] ch = new char[1024 * 200];
-            int len = fileReader.read(ch);
-            fileReader.close();
-
-            String text = new String(ch,0,len);
-
-            System.out.print("应聘职位: ");
-            columns = 2;
-            String office_start_c = "应聘职位：<b style='mso-bidi-font-weight:normal'>";
-            String office_end_c = "</b>";
-            text = printFindtxt(text,office_start_c,office_end_c);
-
-            System.out.print("工作地点: ");
-            columns = 3;
-            String site_start_c = "工作地点：<b style='mso-bidi-font-weight:normal'>";
-            String site_end_c = "</b>";
-            text = printFindtxt(text,site_start_c,site_end_c);
-
-//            String depart_start_c = "应聘部门：<b\n" +
-//                    "                            style='mso-bidi-font-weight:normal'>";
-//            String depart_end_c = "</b>";
-//            text = printFindtxt(text,depart_start_c,depart_end_c);
-
-            System.out.print("姓名: ");
-            columns = 1;
-            String name_start_c = "<span style='font-size:36.0pt;mso-bidi-font-size:22.0pt; line-height:115%;font-family:SimSun;mso-ascii-font-family:Calibri;mso-hansi-font-family: Calibri'>";
-            String name_end_c = "</span>";
-            text = printFindtxt(text,name_start_c,name_end_c);
-
-            System.out.print("个人信息: ");
-            columns = 4;
-            String introduction_start_c = "<span style='font-family:SimSun;mso-ascii-font-family:Calibri;mso-hansi-font-family:Calibri'>";
-            String introduction_end_c = "</span>";
-            text = printFindtxt(text,introduction_start_c,introduction_end_c);
-
-            System.out.print("手机: ");
-            columns = 5;
-            String tel_start_c = "手机：</span></p></td><td width=572 valign=top style='width:428.9pt;padding:0cm 5.4pt 0cm 5.4pt'><p class=MsoNormal><span lang=EN-US>";
-            String tel_end_c = "</span>";
-            text = printFindtxt(text, tel_start_c, tel_end_c);
-
-            System.out.print("工作经历: ");
-            columns = 6;
-            String workhistory1_start_c = "<span style='font-family:SimSun;mso-ascii-font-family:Calibri;mso-hansi-font-family: Calibri'>";
-            String workhistory1_end_c = "]";
-            text = printFindtxt(text,workhistory1_start_c,workhistory1_end_c);
-
-            columns = 7;
-            String workhistory2_start_c = "<span style='font-family:SimSun;mso-ascii-font-family:Calibri;mso-hansi-font-family: Calibri'>";
-            String workhistory2_end_c = "]";
-            text = printFindtxt(text, workhistory2_start_c, workhistory2_end_c);
-
-            columns = 8;
-            System.out.print("教育背景: ");
-            String educational1_start_c = "<span style='font-family:SimSun;  mso-ascii-font-family:Calibri;mso-hansi-font-family:Calibri'>";
-            String educational1_end_c = "                    ";
-            text = printFindtxt(text,educational1_start_c,educational1_end_c);
-
-            columns = 9;
-            String educationa2_start_c = "<span style='font-family:SimSun;  mso-ascii-font-family:Calibri;mso-hansi-font-family:Calibri'>";
-            String educationa2_end_c = "                    ";
-            text = printFindtxt(text,educationa2_start_c,educationa2_end_c);
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("-----------------------------------");
-        System.out.print("\n");
+        if (personnelInfo!=null)
+           list.add(personnelInfo);
     }
 
     public String getTextContentByExtractors(File f){
@@ -353,24 +175,6 @@ public class SearchFile {
         }
 
         return text;
-    }
-
-    public String getTextContent(File f){
-        try {
-            FileReader fileReader = new FileReader(f);
-            char[] ch = new char[1024 * 200];
-            int len = 0;
-            len = fileReader.read(ch);
-            fileReader.close();
-
-            String text = new String(ch,0,len);
-
-            return htmlRemoveTag(text);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return null;
     }
 
     private String htmlRemoveTag(String inputString) {
@@ -416,16 +220,15 @@ public class SearchFile {
         return dest;
     }
 
-    //输出搜索的统计信息
-    private void showInfo() throws IOException
-    {
-        bw.write( "        搜索关键字："+findtxt);
-        bw.newLine();
-        bw.write("        共搜索的" + fileType + "文件数：" + totalFileCount);
-        bw.newLine();
-        bw.write( "        关键文件数："+findedFileCount);
-        bw.newLine();
-        bw.write( "        搜索到的关键字数目："+findContentCount );
-        bw.newLine();
+    private class TmpString{
+        public String text;
+        public String value;
+
+        public TmpString(){}
+
+        public TmpString(String text){
+            this.text = text;
+        }
     }
+
 }
