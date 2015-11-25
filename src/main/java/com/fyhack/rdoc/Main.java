@@ -2,6 +2,7 @@ package com.fyhack.rdoc;
 
 
 import com.fyhack.rdoc.vo.PersonnelInfo;
+import com.hankcs.textrank.TextRankKeyword;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
@@ -22,11 +23,12 @@ public class Main {
     public static String output_xls_file = "C:\\Users\\elc_simayi\\Desktop\\审核2\\test1.xlsx";
     public static String src_xls_file = "C:\\Users\\elc_simayi\\Desktop\\审核2\\test.xlsx";
 
-
     private static Workbook workbook;
     private static XSSFSheet sheet;
     private static XSSFRow row;
     private static XSSFCell code;
+
+    private static StringBuffer stringBuffer;
 
     public static void main(String args[]){
         System.out.println("检索程序开始: \t" + "目标文件夹位置 " + file_path + ",目标文件类型 " + file_type +
@@ -36,6 +38,13 @@ public class Main {
         ArrayList<PersonnelInfo> list = (ArrayList<PersonnelInfo>) searchFiles.startSearchContent();
 
         writeXSL(list);
+
+        // 检测词频
+        stringBuffer = new StringBuffer();
+        for (PersonnelInfo p:list){
+            stringBuffer.append(p.getAudit_opinion());
+        }
+        rankKeyword(stringBuffer.toString());
     }
 
     private static void writeXSL(ArrayList<PersonnelInfo> list){
@@ -51,7 +60,7 @@ public class Main {
 //                System.out.println((r+1)+"|"+personnelInfo.getName() + "|" + personnelInfo.getWork_units_and_positions()
 //                        + "|" + personnelInfo.getWork_level() + "|" + personnelInfo.getAudit_opinion());
 
-                System.out.println((r+1)+"|"+personnelInfo.getName() +"|"+personnelInfo.getAudit_opinion());
+                System.out.println((r + 1) + "|" + personnelInfo.getName() + "|" + personnelInfo.getAudit_opinion());
             }
             workbook.write(fos);
 
@@ -62,6 +71,15 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 需要在hanlp配置文件中配置data源
+     * @param text
+     */
+    private static void rankKeyword(String text){
+        System.out.println("开始检测词频: \t");
+        System.out.println("前20关键词: "+new TextRankKeyword().getKeyword("", text));
     }
 
     private static void setValue(Sheet sheet, int r, PersonnelInfo personnelInfo){
