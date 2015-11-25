@@ -48,9 +48,10 @@ public class Main {
             for(int r=0;r<list.size();r++){
                 PersonnelInfo personnelInfo = list.get(r);
                 setValue(sheet,r+1,personnelInfo);
-                System.out.println((r+1)+"_"+personnelInfo.getName() + "," + personnelInfo.getWork_units_and_positions()
-                        + "," + personnelInfo.getWork_level() + "," + personnelInfo.getAudit_opinion());
+//                System.out.println((r+1)+"|"+personnelInfo.getName() + "|" + personnelInfo.getWork_units_and_positions()
+//                        + "|" + personnelInfo.getWork_level() + "|" + personnelInfo.getAudit_opinion());
 
+                System.out.println((r+1)+"|"+personnelInfo.getName() +"|"+personnelInfo.getAudit_opinion());
             }
             workbook.write(fos);
 

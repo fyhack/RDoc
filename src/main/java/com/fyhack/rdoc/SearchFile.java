@@ -2,7 +2,10 @@ package com.fyhack.rdoc;
 
 
 import com.fyhack.rdoc.vo.PersonnelInfo;
+import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.extractor.WordExtractor;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -81,7 +84,7 @@ public class SearchFile {
         }
     }
 
-    private TmpString printFindtxt(TmpString tmpString , String start_c , String end_c){
+    private TmpString printFindtxt(TmpString tmpString , String start_c , String end_c ,boolean checkColon){
         TmpString tmpString1 = new TmpString();
 
         int name_start = tmpString.text.indexOf(start_c)+start_c.length();
@@ -94,12 +97,15 @@ public class SearchFile {
         String value = tmpString.text.substring(name_start, name_end);
         value = getFormatText(htmlRemoveTag(value));
 
-        //过滤冒号
-        int colon = value.indexOf("：");
-        if (colon == -1)
-            colon = value.indexOf(":");
-        if (colon!=-1)
-            value = value.substring(colon+1);
+        if(checkColon){
+            //过滤冒号
+            int colon = value.indexOf("：");
+            if (colon == -1)
+                colon = value.indexOf(":");
+            if (colon!=-1)
+                value = value.substring(colon+1);
+        }
+
         tmpString1.value = value;
         if(DEBUG) System.out.println(tmpString1.value);
 
@@ -113,7 +119,6 @@ public class SearchFile {
     {
         if(DEBUG) System.out.println(f.getName() + ":");
         String text = getTextContentByExtractors(f);
-//        System.out.println(text);
         searchInfo(text);
         if(DEBUG) System.out.println("end.");
     }
@@ -125,7 +130,7 @@ public class SearchFile {
         if(DEBUG) System.out.print("姓名：");
         String office_start_c = "姓名";
         String office_end_c = "工作单位及职务";
-        tmpString = printFindtxt(tmpString,office_start_c,office_end_c);
+        tmpString = printFindtxt(tmpString,office_start_c,office_end_c,true);
         if (tmpString.value!=null)
             personnelInfo = new PersonnelInfo();
         if (personnelInfo!=null)
@@ -136,21 +141,21 @@ public class SearchFile {
         if(DEBUG) System.out.print("工作单位及职务：");
         String site_start_c = "工作单位及职务";
         String site_end_c = "级别";
-        tmpString = printFindtxt(tmpString,site_start_c,site_end_c);
+        tmpString = printFindtxt(tmpString,site_start_c,site_end_c,true);
         if (personnelInfo!=null)
             personnelInfo.work_units_and_positions = tmpString.value;
 
         if(DEBUG) System.out.print("级别：");
         String name_start_c = "级别";
         String name_end_c = "项目";
-        tmpString = printFindtxt(tmpString,name_start_c,name_end_c);
+        tmpString = printFindtxt(tmpString,name_start_c,name_end_c,true);
         if (personnelInfo!=null)
             personnelInfo.work_level = tmpString.value;
 
         if(DEBUG) System.out.print("审核意见: ");
         String introduction_start_c = "见\t";
         String introduction_end_c = "初审人";
-        tmpString = printFindtxt(tmpString,introduction_start_c,introduction_end_c);
+        tmpString = printFindtxt(tmpString,introduction_start_c,introduction_end_c,false);
         if (personnelInfo!=null)
             personnelInfo.audit_opinion = tmpString.value;
 
@@ -163,11 +168,24 @@ public class SearchFile {
         String text = null;
         try {
             in = new FileInputStream(f);
-            WordExtractor extractor = null;
             // 创建WordExtractor
-            extractor = new WordExtractor(in);
+            WordExtractor extractor = new WordExtractor(in);
             // 对doc文件进行提取
             text = extractor.getText();
+
+//            XWPFDocument doc2007;
+//            XWPFWordExtractor word2007;
+//            doc2007 = new XWPFDocument(in);
+//            word2007 = new XWPFWordExtractor(doc2007);
+
+//            HWPFDocument doc2003;
+//            WordExtractor word2003;
+//            doc2003 = new HWPFDocument(in);
+//            word2003 = new WordExtractor(doc2003);
+//
+//            text = word2003.getText();
+
+//            System.out.println(text);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
