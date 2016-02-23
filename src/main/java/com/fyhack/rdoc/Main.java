@@ -20,10 +20,10 @@ import java.util.List;
  * @since 2015/11/5
  */
 public class Main {
-    public static String file_path = "C:\\Users\\elc_simayi\\Desktop\\审核2";
+    public static String file_path = "C:\\Users\\elc_simayi\\Desktop\\汇总";
     public static String file_type = "doc";
-    public static String output_xls_file = "C:\\Users\\elc_simayi\\Desktop\\审核2\\test1.xlsx";
-    public static String src_xls_file = "C:\\Users\\elc_simayi\\Desktop\\审核2\\test.xlsx";
+    public static String output_xls_file = "C:\\Users\\elc_simayi\\Desktop\\output\\product.xlsx";
+    public static String src_xls_file = "C:\\Users\\elc_simayi\\Desktop\\output\\template.xlsx";
 
     private static Workbook workbook;
     private static XSSFSheet sheet;
@@ -39,18 +39,24 @@ public class Main {
         SearchFile searchFiles = new SearchFile(file_path,file_type);
         ArrayList<PersonnelInfo> list = (ArrayList<PersonnelInfo>) searchFiles.startSearchContent();
 
+//        for(int r=0;r<list.size();r++){
+//            PersonnelInfo personnelInfo = list.get(r);
+//                System.out.println((r+1)+"|"+personnelInfo.getName() + "|" + personnelInfo.getWork_units_and_positions()
+//                        + "|" + personnelInfo.getWork_level() + "|" + personnelInfo.getOther_opinion() + "|" + personnelInfo.getAudit_opinion());
+//        }
+
         //输出excel
         writeXSL(list);
 
         // 检测词频
-        stringBuffer = new StringBuffer();
+        /*stringBuffer = new StringBuffer();
         for (PersonnelInfo p:list){
             stringBuffer.append(p.getAudit_opinion());
         }
         rankKeyword(stringBuffer.toString());
 
         List<String> phraseList = HanLP.extractPhrase(stringBuffer.toString(), 20);
-        System.out.println("前20短语: "+phraseList);
+        System.out.println("前20短语: "+phraseList);*/
     }
 
     private static void writeXSL(ArrayList<PersonnelInfo> list){
@@ -89,7 +95,7 @@ public class Main {
     }
 
     private static void setValue(Sheet sheet, int r, PersonnelInfo personnelInfo){
-        for(int c=1;c<=4;c++){
+        for(int c=1;c<=5;c++){
             Row row = sheet.getRow(r);
             if(row==null)
                 row = sheet.createRow(r);
@@ -108,6 +114,9 @@ public class Main {
                     cell.setCellValue(personnelInfo.getWork_level());
                     break;
                 case 4:
+                    cell.setCellValue(personnelInfo.getOther_opinion());
+                    break;
+                case 5:
                     cell.setCellValue(personnelInfo.getAudit_opinion());
                     break;
             }

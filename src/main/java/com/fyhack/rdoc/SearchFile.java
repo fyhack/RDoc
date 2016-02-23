@@ -85,16 +85,16 @@ public class SearchFile {
     }
 
     private TmpString printFindtxt(TmpString tmpString , String start_c , String end_c ,boolean checkColon){
-        TmpString tmpString1 = new TmpString();
-
-        int name_start = tmpString.text.indexOf(start_c)+start_c.length();
-        if(name_start==-1)
+        tmpString.value = null;
+        int value_start = tmpString.text.indexOf(start_c)+start_c.length();
+        if(value_start==-1)
             return tmpString;
-        int name_end = tmpString.text.indexOf(end_c, name_start);
-        if(name_end==-1)
+        int value_end = tmpString.text.indexOf(end_c, value_start);
+        if(value_end==-1)
             return tmpString;
 
-        String value = tmpString.text.substring(name_start, name_end);
+        TmpString newTmpString = new TmpString();
+        String value = tmpString.text.substring(value_start, value_end);
         value = getFormatText(htmlRemoveTag(value));
 
         if(checkColon){
@@ -106,13 +106,13 @@ public class SearchFile {
                 value = value.substring(colon+1);
         }
 
-        tmpString1.value = value;
-        if(DEBUG) System.out.println(tmpString1.value);
+        newTmpString.value = value;
+        if(DEBUG) System.out.println(newTmpString.value);
 
             //TODO 尾部判断
-        tmpString1.text = tmpString.text.substring(name_end);
+        newTmpString.text = tmpString.text.substring(value_end);
 
-        return tmpString1;
+        return newTmpString;
     }
 
     private void FindTxt(File f )
@@ -124,7 +124,7 @@ public class SearchFile {
     }
 
     private void searchInfo(String text){
-        TmpString tmpString = new TmpString(text);
+        TmpString tmpString = new TmpString(getFormatText(text));
         PersonnelInfo personnelInfo = null;
 
         if(DEBUG) System.out.print("姓名：");
@@ -135,8 +135,6 @@ public class SearchFile {
             personnelInfo = new PersonnelInfo();
         if (personnelInfo!=null)
             personnelInfo.name = tmpString.value;
-
-
 
         if(DEBUG) System.out.print("工作单位及职务：");
         String site_start_c = "工作单位及职务";
@@ -152,8 +150,15 @@ public class SearchFile {
         if (personnelInfo!=null)
             personnelInfo.work_level = tmpString.value;
 
+        if(DEBUG) System.out.print("其他问题：");
+        String other_start_c ="其他问题";
+        String other_end_c = "审核意见";
+        tmpString = printFindtxt(tmpString,other_start_c,other_end_c,false);
+        if (personnelInfo!=null)
+            personnelInfo.other_opinion = tmpString.value;
+
         if(DEBUG) System.out.print("审核意见: ");
-        String introduction_start_c = "见\t";
+        String introduction_start_c = "审核意见";
         String introduction_end_c = "初审人";
         tmpString = printFindtxt(tmpString,introduction_start_c,introduction_end_c,false);
         if (personnelInfo!=null)

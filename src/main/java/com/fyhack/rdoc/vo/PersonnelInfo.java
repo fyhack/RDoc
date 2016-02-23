@@ -12,6 +12,7 @@ public class PersonnelInfo {
     public String name; //姓名
     public String work_units_and_positions; //工作单位及职务
     public String work_level;  //级别
+    public String other_opinion; //其他问题
     public String audit_opinion;  //审核意见
 
     public String getName() {
@@ -34,5 +35,12 @@ public class PersonnelInfo {
             audit_opinion = "-";
         }
         return audit_opinion;
+    }
+
+    public String getOther_opinion() {
+        if(other_opinion==null || other_opinion.length()==0) {
+            other_opinion = "-";
+        }
+        return other_opinion;
     }
 }
