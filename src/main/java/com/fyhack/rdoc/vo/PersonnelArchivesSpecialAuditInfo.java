@@ -8,7 +8,7 @@ package com.fyhack.rdoc.vo;
  * @author elc_simayi
  * @since 2015/11/25
  */
-public class PersonnelInfo {
+public class PersonnelArchivesSpecialAuditInfo {
     public String name; //姓名
     public String work_units_and_positions; //工作单位及职务
     public String work_level;  //级别

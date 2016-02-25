@@ -1,11 +1,8 @@
 package com.fyhack.rdoc;
 
 
-import com.fyhack.rdoc.vo.PersonnelInfo;
-import org.apache.poi.hwpf.HWPFDocument;
+import com.fyhack.rdoc.vo.CadreAppointmentAndRemovalApprovalInfo;
 import org.apache.poi.hwpf.extractor.WordExtractor;
-import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -20,30 +17,30 @@ import java.util.regex.Pattern;
  * @author elc_simayi
  * @since 2015/11/5
  */
-public class SearchFile {
+public class SearchFileByCadreAppointmentAndRemovalApprovalInfo {
     private boolean DEBUG = false;
     private String filename=null;   //要查找的目录路径
     private BufferedWriter bw=null;
     private String fileType=null;   //要查找的文件类型
     private int count =0;
 
-    private ArrayList<PersonnelInfo> list;  //
+    private ArrayList<CadreAppointmentAndRemovalApprovalInfo> list;  //
 
 
     /**构造函数，
      @param filename 要查找目录的对象
      @param fileType 要查找的文件类型
      */
-    public SearchFile( String  filename , String fileType )
+    public SearchFileByCadreAppointmentAndRemovalApprovalInfo(String filename, String fileType)
     {
         this.filename=filename;
         this.fileType=fileType;
     }
 
     //暴露的公共接口，开始在指定的目录中搜索关键字
-    public List<PersonnelInfo> startSearchContent()
+    public List<CadreAppointmentAndRemovalApprovalInfo> startSearchContent()
     {
-        list = new ArrayList<PersonnelInfo>();
+        list = new ArrayList<CadreAppointmentAndRemovalApprovalInfo>();
         count = 0;
         try
         {
@@ -125,47 +122,103 @@ public class SearchFile {
 
     private void searchInfo(String text){
         TmpString tmpString = new TmpString(getFormatText(text));
-        PersonnelInfo personnelInfo = null;
+        CadreAppointmentAndRemovalApprovalInfo cadreAppointmentAndRemovalApprovalInfo = null;
 
         if(DEBUG) System.out.print("姓名：");
-        String office_start_c = "姓名";
-        String office_end_c = "工作单位及职务";
-        tmpString = printFindtxt(tmpString,office_start_c,office_end_c,true);
-        if (tmpString.value!=null)
-            personnelInfo = new PersonnelInfo();
-        if (personnelInfo!=null)
-            personnelInfo.name = tmpString.value;
-
-        if(DEBUG) System.out.print("工作单位及职务：");
-        String site_start_c = "工作单位及职务";
-        String site_end_c = "级别";
-        tmpString = printFindtxt(tmpString,site_start_c,site_end_c,true);
-        if (personnelInfo!=null)
-            personnelInfo.work_units_and_positions = tmpString.value;
-
-        if(DEBUG) System.out.print("级别：");
-        String name_start_c = "级别";
-        String name_end_c = "项目";
+        String name_start_c = "姓名";
+        String name_end_c = "性别";
         tmpString = printFindtxt(tmpString,name_start_c,name_end_c,true);
-        if (personnelInfo!=null)
-            personnelInfo.work_level = tmpString.value;
+        if (tmpString.value!=null)
+            cadreAppointmentAndRemovalApprovalInfo = new CadreAppointmentAndRemovalApprovalInfo();
+        if (cadreAppointmentAndRemovalApprovalInfo!=null)
+            cadreAppointmentAndRemovalApprovalInfo.name = tmpString.value;
 
-        if(DEBUG) System.out.print("其他问题：");
-        String other_start_c ="其他问题";
-        String other_end_c = "审核意见";
-        tmpString = printFindtxt(tmpString,other_start_c,other_end_c,false);
-        if (personnelInfo!=null)
-            personnelInfo.other_opinion = tmpString.value;
+        if(DEBUG) System.out.print("性别：");
+        String sex_start_c = "性别";
+        String sex_end_c = "出生年月";
+        tmpString = printFindtxt(tmpString,sex_start_c,sex_end_c,true);
+        if (cadreAppointmentAndRemovalApprovalInfo!=null)
+            cadreAppointmentAndRemovalApprovalInfo.sex = tmpString.value;
 
-        if(DEBUG) System.out.print("审核意见: ");
-        String introduction_start_c = "审核意见";
-        String introduction_end_c = "初审人";
-        tmpString = printFindtxt(tmpString,introduction_start_c,introduction_end_c,false);
-        if (personnelInfo!=null)
-            personnelInfo.audit_opinion = tmpString.value;
+        if(DEBUG) System.out.print("出生年月(岁)：");
+        String birthday_start_c = "出生年月(岁)";
+        String birthday_end_c = "照片";
+        tmpString = printFindtxt(tmpString,birthday_start_c,birthday_end_c,true);
+        if (cadreAppointmentAndRemovalApprovalInfo!=null)
+            cadreAppointmentAndRemovalApprovalInfo.birthday = tmpString.value;
 
-        if (personnelInfo!=null)
-           list.add(personnelInfo);
+        if(DEBUG) System.out.print("民族：");
+        String nation_start_c ="民族";
+        String nation_end_c = "籍贯";
+        tmpString = printFindtxt(tmpString,nation_start_c,nation_end_c,false);
+        if (cadreAppointmentAndRemovalApprovalInfo!=null)
+            cadreAppointmentAndRemovalApprovalInfo.nation = tmpString.value;
+
+        if(DEBUG) System.out.print("籍贯: ");
+        String birthplace_start_c = "籍贯";
+        String birthplace_end_c = "出生地";
+        tmpString = printFindtxt(tmpString,birthplace_start_c,birthplace_end_c,false);
+        if (cadreAppointmentAndRemovalApprovalInfo!=null)
+            cadreAppointmentAndRemovalApprovalInfo.birthplace = tmpString.value;
+
+        if(DEBUG) System.out.print("入党时间: ");
+        String partytime_start_c = "入党时间";
+        String partytime_end_c = "参加工作";
+        tmpString = printFindtxt(tmpString,partytime_start_c,partytime_end_c,false);
+        if (cadreAppointmentAndRemovalApprovalInfo!=null)
+            cadreAppointmentAndRemovalApprovalInfo.partytime = tmpString.value;
+
+        if(DEBUG) System.out.print("工作时间: ");
+        String worktime_start_c = "工作时间";
+        String worktime_end_c = "健康状况";
+        tmpString = printFindtxt(tmpString,worktime_start_c,worktime_end_c,false);
+        if (cadreAppointmentAndRemovalApprovalInfo!=null)
+            cadreAppointmentAndRemovalApprovalInfo.worktime = tmpString.value;
+
+        if(DEBUG) System.out.print("技术职务: ");
+        String positions_start_c = "技术职务";
+        String positions_end_c = "熟悉专业";
+        tmpString = printFindtxt(tmpString,positions_start_c,positions_end_c,false);
+        if (cadreAppointmentAndRemovalApprovalInfo!=null)
+            cadreAppointmentAndRemovalApprovalInfo.positions = tmpString.value;
+
+        if(DEBUG) System.out.print("全日制教育: ");
+        String education_start_c = "全日制教育";
+        String education_end_c = "毕业院校";
+        tmpString = printFindtxt(tmpString,education_start_c,education_end_c,false);
+        if (cadreAppointmentAndRemovalApprovalInfo!=null)
+            cadreAppointmentAndRemovalApprovalInfo.education = tmpString.value;
+
+        if(DEBUG) System.out.print("全日制教育毕业院校系及专业: ");
+        String school_start_c = "毕业院校系及专业";
+        String school_end_c = "在职教育";
+        tmpString = printFindtxt(tmpString,school_start_c,school_end_c,false);
+        if (cadreAppointmentAndRemovalApprovalInfo!=null)
+            cadreAppointmentAndRemovalApprovalInfo.school = tmpString.value;
+
+        if(DEBUG) System.out.print("在职教育: ");
+        String workEducation_start_c = "在职教育";
+        String workEducation_end_c = "毕业院校";
+        tmpString = printFindtxt(tmpString,workEducation_start_c,workEducation_end_c,false);
+        if (cadreAppointmentAndRemovalApprovalInfo!=null)
+            cadreAppointmentAndRemovalApprovalInfo.workEducation = tmpString.value;
+
+        if(DEBUG) System.out.print("在职教育毕业院校系及专业: ");
+        String workSchool_start_c = "毕业院校系及专业";
+        String workSchool_end_c = "现任职务";
+        tmpString = printFindtxt(tmpString,workSchool_start_c,workSchool_end_c,false);
+        if (cadreAppointmentAndRemovalApprovalInfo!=null)
+            cadreAppointmentAndRemovalApprovalInfo.workSchool = tmpString.value;
+
+        if(DEBUG) System.out.print("现任职务: ");
+        String job_start_c = "现任职务";
+        String job_end_c = "拟任职务";
+        tmpString = printFindtxt(tmpString,job_start_c,job_end_c,false);
+        if (cadreAppointmentAndRemovalApprovalInfo!=null)
+            cadreAppointmentAndRemovalApprovalInfo.job = tmpString.value;
+
+        if (cadreAppointmentAndRemovalApprovalInfo!=null)
+           list.add(cadreAppointmentAndRemovalApprovalInfo);
     }
 
     public String getTextContentByExtractors(File f){
@@ -205,12 +258,12 @@ public class SearchFile {
             return null;
         String htmlStr = inputString; // 含html标签的字符串
         String textStr = "";
-        java.util.regex.Pattern p_script;
-        java.util.regex.Matcher m_script;
-        java.util.regex.Pattern p_style;
-        java.util.regex.Matcher m_style;
-        java.util.regex.Pattern p_html;
-        java.util.regex.Matcher m_html;
+        Pattern p_script;
+        Matcher m_script;
+        Pattern p_style;
+        Matcher m_style;
+        Pattern p_html;
+        Matcher m_html;
         try {
             //定义script的正则表达式{或<script[^>]*?>[\\s\\S]*?<\\/script>
             String regEx_script = "<[\\s]*?script[^>]*?>[\\s\\S]*?<[\\s]*?\\/[\\s]*?script[\\s]*?>";
