@@ -45,7 +45,7 @@ public class SearchFileByCadreAppointmentAndRemovalApprovalInfo {
         try
         {
             File f=new File( filename );
-            listFile(f);
+            listFile(f);  //检索文件
             System.out.println("检索程序完毕: \t查找到."+fileType+"文件数目"+count+",检索出有效名单数目"+list.size());
         }
         catch( Exception e)
@@ -74,7 +74,7 @@ public class SearchFileByCadreAppointmentAndRemovalApprovalInfo {
                 //判断文件名是否以fileType结尾
                 if( files[x].getName().endsWith( fileType ))
                 {
-                    FindTxt( files[x]);
+                    FindTxt( files[x]); //检索文件内容
                     count++;
                 }
             }

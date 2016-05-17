@@ -18,10 +18,10 @@ import java.util.ArrayList;
  * @since 2015/11/5
  */
 public class Main {
-    public static String file_path = "C:\\Users\\elc_simayi\\Desktop\\干部任免审批表汇总";
+    public static String file_path = "C:\\Users\\elc_simayi\\Desktop\\新建文件夹";
     public static String file_type = "doc";
     public static String output_xls_file = "C:\\Users\\elc_simayi\\Desktop\\output\\product.xlsx";
-    public static String src_xls_file = "C:\\Users\\elc_simayi\\Desktop\\output\\CadreAppointmentAndRemovalApprovalInfo.xlsx";
+    public static String muban_xls_file = "C:\\Users\\elc_simayi\\Desktop\\output\\CadreAppointmentAndRemovalApprovalInfo.xlsx"; //模板文件
 
     private static Workbook workbook;
     private static XSSFSheet sheet;
@@ -34,7 +34,7 @@ public class Main {
         System.out.println("检索程序开始: \t" + "目标文件夹位置 " + file_path + ",目标文件类型 " + file_type +
                 ", ps'本机系统编码 " + System.getProperty("file.encoding"));
 
-        switch (2){
+        switch (3){
             case 1:
                 SearchFileByPersonnelArchivesSpecialAuditInfo searchFiles1 = new SearchFileByPersonnelArchivesSpecialAuditInfo(file_path,file_type);
                 ArrayList<PersonnelArchivesSpecialAuditInfo> list1 = (ArrayList<PersonnelArchivesSpecialAuditInfo>) searchFiles1.startSearchContent();
@@ -59,6 +59,11 @@ public class Main {
                 }
                 writeXSLToCadreAppointmentAndRemovalApprovalInfo(list2);
                 break;
+            case 3:
+                SearchFileByCadreAppointmentAndRemovalApprovalInfo searchFiles3 = new SearchFileByCadreAppointmentAndRemovalApprovalInfo(file_path,file_type);
+                ArrayList<CadreAppointmentAndRemovalApprovalInfo> list3 = (ArrayList<CadreAppointmentAndRemovalApprovalInfo>) searchFiles3.startSearchContent();
+//                writeXSLToCadreAppointmentAndRemovalApprovalInfo(list2);
+                break;
         }
 
         //输出excel
@@ -77,7 +82,7 @@ public class Main {
 
     private static void writeXSLToCadreAppointmentAndRemovalApprovalInfo(ArrayList<CadreAppointmentAndRemovalApprovalInfo> list){
         try {
-            workbook = WorkbookFactory.create(new FileInputStream(src_xls_file));
+            workbook = WorkbookFactory.create(new FileInputStream(muban_xls_file));
             FileOutputStream fos = new FileOutputStream(output_xls_file);
 
             Sheet sheet = workbook.getSheetAt(0);
@@ -148,7 +153,7 @@ public class Main {
 
     private static void writeXSLToPersonnelArchivesSpecialAuditInfo(ArrayList<PersonnelArchivesSpecialAuditInfo> list){
         try {
-            workbook = WorkbookFactory.create(new FileInputStream(src_xls_file));
+            workbook = WorkbookFactory.create(new FileInputStream(muban_xls_file));
             FileOutputStream fos = new FileOutputStream(output_xls_file);
 
             Sheet sheet = workbook.getSheetAt(0);
