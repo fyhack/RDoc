@@ -1,6 +1,7 @@
 package com.fyhack.rdoc;
 
 import com.fyhack.rdoc.vo.CadreAppointmentAndRemovalApprovalInfo;
+import com.fyhack.rdoc.vo.CandidateInfo;
 import com.fyhack.rdoc.vo.PersonnelArchivesSpecialAuditInfo;
 import com.hankcs.textrank.TextRankKeyword;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
  * @since 2015/11/5
  */
 public class Main {
-    public static String file_path = "C:\\Users\\elc_simayi\\Desktop\\新建文件夹";
+    public static String file_path = "C:\\Users\\elc_simayi\\Desktop\\汇总106人";
     public static String file_type = "doc";
     public static String output_xls_file = "C:\\Users\\elc_simayi\\Desktop\\output\\product.xlsx";
     public static String muban_xls_file = "C:\\Users\\elc_simayi\\Desktop\\output\\CadreAppointmentAndRemovalApprovalInfo.xlsx"; //模板文件
@@ -60,8 +61,19 @@ public class Main {
                 writeXSLToCadreAppointmentAndRemovalApprovalInfo(list2);
                 break;
             case 3:
-                SearchFileByCadreAppointmentAndRemovalApprovalInfo searchFiles3 = new SearchFileByCadreAppointmentAndRemovalApprovalInfo(file_path,file_type);
-                ArrayList<CadreAppointmentAndRemovalApprovalInfo> list3 = (ArrayList<CadreAppointmentAndRemovalApprovalInfo>) searchFiles3.startSearchContent();
+                SearchFileByCandidateInfo searchFiles3 = new SearchFileByCandidateInfo(file_path,file_type);
+                ArrayList<CandidateInfo> list3 = (ArrayList<CandidateInfo>) searchFiles3.startSearchContent();
+                for(CandidateInfo info : list3){
+                    System.out.print("姓名: "+info.name+" | ");
+                    System.out.print("性别: " + info.sex + " | ");
+                    System.out.print("出生日期: "+info.birthday+" | ");
+                    System.out.print("TEL: "+info.tel+" | ");
+                    System.out.print("学校: "+info.school+" | ");
+                    System.out.print("技术职称: "+info.jishuzhicheng+" | ");
+                    System.out.print("应聘岗位: "+info.gangwei+" | ");
+                    System.out.print("经验: "+info.exp+" | ");
+                    System.out.println();
+                }
 //                writeXSLToCadreAppointmentAndRemovalApprovalInfo(list2);
                 break;
         }
