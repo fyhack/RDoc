@@ -2,6 +2,8 @@ package com.fyhack.rdoc;
 
 import com.fyhack.rdoc.vo.CandidateInfo;
 import org.apache.poi.hwpf.extractor.WordExtractor;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -20,7 +22,7 @@ public class SearchFileByCandidateInfo {
     private boolean DEBUG = false;
     private String filename=null;   //要查找的目录路径
     private BufferedWriter bw=null;
-    private String fileType=null;   //要查找的文件类型
+    private String[] fileType=null;   //要查找的文件类型
     private int count =0;
 
     private ArrayList<CandidateInfo> list;  //
@@ -30,7 +32,7 @@ public class SearchFileByCandidateInfo {
      @param filename 要查找目录的对象
      @param fileType 要查找的文件类型
      */
-    public SearchFileByCandidateInfo(String filename, String fileType)
+    public SearchFileByCandidateInfo(String filename, String[] fileType)
     {
         this.filename=filename;
         this.fileType=fileType;
@@ -71,10 +73,12 @@ public class SearchFileByCandidateInfo {
             else
             {
                 //判断文件名是否以fileType结尾
-                if( files[x].getName().endsWith( fileType ))
-                {
-                    FindTxt( files[x]); //检索文件内容
-                    count++;
+                for (String ftype : fileType){
+                    if( files[x].getName().endsWith( ftype ))
+                    {
+                        FindTxt( files[x]); //检索文件内容
+                        count++;
+                    }
                 }
             }
         }
@@ -219,15 +223,19 @@ public class SearchFileByCandidateInfo {
         String text = null;
         try {
             in = new FileInputStream(f);
-            // 创建WordExtractor
-            WordExtractor extractor = new WordExtractor(in);
-            // 对doc文件进行提取
-            text = extractor.getText();
 
-//            XWPFDocument doc2007;
-//            XWPFWordExtractor word2007;
-//            doc2007 = new XWPFDocument(in);
-//            word2007 = new XWPFWordExtractor(doc2007);
+            if (f.getName().endsWith("docx")){
+                XWPFDocument doc2007;
+                XWPFWordExtractor word2007;
+                doc2007 = new XWPFDocument(in);
+                word2007 = new XWPFWordExtractor(doc2007);
+                text = word2007.getText();
+            } else {
+                // 创建WordExtractor
+                WordExtractor extractor = new WordExtractor(in);
+                // 对doc文件进行提取
+                text = extractor.getText();
+            }
 
 //            HWPFDocument doc2003;
 //            WordExtractor word2003;
@@ -239,9 +247,7 @@ public class SearchFileByCandidateInfo {
 //            System.out.println(text);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-
-        } catch (IllegalArgumentException e){
+        } catch (Exception e) {
             System.out.println(f.getName());
             e.printStackTrace();
         }

@@ -24,7 +24,7 @@ public class SearchFileByPersonnelArchivesSpecialAuditInfo {
     private boolean DEBUG = false;
     private String filename=null;   //要查找的目录路径
     private BufferedWriter bw=null;
-    private String fileType=null;   //要查找的文件类型
+    private String[] fileType=null;   //要查找的文件类型
     private int count =0;
 
     private ArrayList<PersonnelArchivesSpecialAuditInfo> list;  //
@@ -34,7 +34,7 @@ public class SearchFileByPersonnelArchivesSpecialAuditInfo {
      @param filename 要查找目录的对象
      @param fileType 要查找的文件类型
      */
-    public SearchFileByPersonnelArchivesSpecialAuditInfo( String  filename , String fileType )
+    public SearchFileByPersonnelArchivesSpecialAuditInfo( String  filename , String[] fileType )
     {
         this.filename=filename;
         this.fileType=fileType;
@@ -75,7 +75,7 @@ public class SearchFileByPersonnelArchivesSpecialAuditInfo {
             else
             {
                 //判断文件名是否以fileType结尾
-                if( files[x].getName().endsWith( fileType ))
+                if( files[x].getName().endsWith( fileType[0] ))
                 {
                     FindTxt( files[x]);
                     count++;
