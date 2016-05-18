@@ -1,6 +1,7 @@
 package com.fyhack.rdoc;
 
 import com.fyhack.rdoc.vo.CandidateInfo;
+import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -235,14 +236,16 @@ public class SearchFileByCandidateInfo {
                 WordExtractor extractor = new WordExtractor(in);
                 // 对doc文件进行提取
                 text = extractor.getText();
+
+//                HWPFDocument doc2003;
+//                WordExtractor word2003;
+//                doc2003 = new HWPFDocument(in);
+//                word2003 = new WordExtractor(doc2003);
+//
+//                text = word2003.getText();
             }
 
-//            HWPFDocument doc2003;
-//            WordExtractor word2003;
-//            doc2003 = new HWPFDocument(in);
-//            word2003 = new WordExtractor(doc2003);
-//
-//            text = word2003.getText();
+
 
 //            System.out.println(text);
         } catch (FileNotFoundException e) {

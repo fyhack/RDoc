@@ -22,4 +22,6 @@ public class CadreAppointmentAndRemovalApprovalInfo {
     public String workEducation; //在职教育
     public String workSchool; //在职教育毕业院校
     public String job; //当前岗位
+    public String chushengdi; //出生地
+    public String jiangcheng; //奖惩情况
 }

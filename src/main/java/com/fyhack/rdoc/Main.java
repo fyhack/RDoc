@@ -19,7 +19,7 @@ import java.util.ArrayList;
  * @since 2015/11/5
  */
 public class Main {
-    public static String file_path = "C:\\Users\\elc_simayi\\Desktop\\汇总106人";
+    public static String file_path = "C:\\Users\\elc_simayi\\Desktop\\2";
     public static String[] file_type = {"doc","docx"};
     public static String output_xls_file = "C:\\Users\\elc_simayi\\Desktop\\output\\product.xlsx";
     public static String muban_xls_file = "C:\\Users\\elc_simayi\\Desktop\\output\\CadreAppointmentAndRemovalApprovalInfo.xlsx"; //模板文件
@@ -35,7 +35,7 @@ public class Main {
         System.out.println("检索程序开始: \t" + "目标文件夹位置 " + file_path + ",目标文件类型 " + file_type +
                 ", ps'本机系统编码 " + System.getProperty("file.encoding"));
 
-        switch (3){
+        switch (2){
             case 1:
                 SearchFileByPersonnelArchivesSpecialAuditInfo searchFiles1 = new SearchFileByPersonnelArchivesSpecialAuditInfo(file_path,file_type);
                 ArrayList<PersonnelArchivesSpecialAuditInfo> list1 = (ArrayList<PersonnelArchivesSpecialAuditInfo>) searchFiles1.startSearchContent();
@@ -74,7 +74,7 @@ public class Main {
                     System.out.print("经验: "+info.exp+" | ");
                     System.out.println();
                 }
-//                writeXSLToCadreAppointmentAndRemovalApprovalInfo(list2);
+//                writeXSLToCandidateInfo(list3);
                 break;
         }
 
@@ -92,6 +92,66 @@ public class Main {
         System.out.println("前20短语: "+phraseList);*/
     }
 
+    private static void writeXSLToCandidateInfo(ArrayList<CandidateInfo> list){
+        try {
+            workbook = WorkbookFactory.create(new FileInputStream(muban_xls_file));
+            FileOutputStream fos = new FileOutputStream(output_xls_file);
+
+            Sheet sheet = workbook.getSheetAt(0);
+
+            for(int r=0;r<list.size();r++){
+                CandidateInfo candidateInfo = list.get(r);
+                for(int c=1;c<=9;c++){
+                    Row row = sheet.getRow(r+1);
+                    if(row==null)
+                        row = sheet.createRow(r);
+                    Cell cell = row.getCell(c);
+                    if(cell==null)
+                        cell = row.createCell(c);
+
+                    switch (c){
+                        case 1:
+                            cell.setCellValue(candidateInfo.name);
+                            break;
+                        case 2:
+                            cell.setCellValue(candidateInfo.sex);
+                            break;
+                        case 3:
+                            cell.setCellValue(candidateInfo.birthday);
+                            break;
+                        case 4:
+                            cell.setCellValue(candidateInfo.school);
+                            break;
+                        case 5:
+                            cell.setCellValue(candidateInfo.exp);
+                            break;
+                        case 6:
+                            cell.setCellValue(candidateInfo.jishuzhicheng);
+                            break;
+                        case 7:
+                            //部门暂缺
+                            break;
+                        case 8:
+                            cell.setCellValue(candidateInfo.gangwei);
+                            break;
+                        case 9:
+                            cell.setCellValue(candidateInfo.tel);
+                            break;
+
+                    }
+                }
+            }
+            workbook.write(fos);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (InvalidFormatException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static void writeXSLToCadreAppointmentAndRemovalApprovalInfo(ArrayList<CadreAppointmentAndRemovalApprovalInfo> list){
         try {
             workbook = WorkbookFactory.create(new FileInputStream(muban_xls_file));
@@ -101,7 +161,7 @@ public class Main {
 
             for(int r=0;r<list.size();r++){
                 CadreAppointmentAndRemovalApprovalInfo cadreAppointmentAndRemovalApprovalInfo = list.get(r);
-                for(int c=1;c<=13;c++){
+                for(int c=1;c<=15;c++){
                     Row row = sheet.getRow(r+1);
                     if(row==null)
                         row = sheet.createRow(r+1);
@@ -126,28 +186,34 @@ public class Main {
                             cell.setCellValue(cadreAppointmentAndRemovalApprovalInfo.birthplace);
                             break;
                         case 6:
-                            cell.setCellValue(cadreAppointmentAndRemovalApprovalInfo.partytime);
+                            cell.setCellValue(cadreAppointmentAndRemovalApprovalInfo.chushengdi);
                             break;
                         case 7:
-                            cell.setCellValue(cadreAppointmentAndRemovalApprovalInfo.worktime);
+                            cell.setCellValue(cadreAppointmentAndRemovalApprovalInfo.partytime);
                             break;
                         case 8:
-                            cell.setCellValue(cadreAppointmentAndRemovalApprovalInfo.positions);
+                            cell.setCellValue(cadreAppointmentAndRemovalApprovalInfo.worktime);
                             break;
                         case 9:
-                            cell.setCellValue(cadreAppointmentAndRemovalApprovalInfo.education);
+                            cell.setCellValue(cadreAppointmentAndRemovalApprovalInfo.positions);
                             break;
                         case 10:
-                            cell.setCellValue(cadreAppointmentAndRemovalApprovalInfo.school);
+                            cell.setCellValue(cadreAppointmentAndRemovalApprovalInfo.education);
                             break;
                         case 11:
-                            cell.setCellValue(cadreAppointmentAndRemovalApprovalInfo.workEducation);
+                            cell.setCellValue(cadreAppointmentAndRemovalApprovalInfo.school);
                             break;
                         case 12:
-                            cell.setCellValue(cadreAppointmentAndRemovalApprovalInfo.workSchool);
+                            cell.setCellValue(cadreAppointmentAndRemovalApprovalInfo.workEducation);
                             break;
                         case 13:
+                            cell.setCellValue(cadreAppointmentAndRemovalApprovalInfo.workSchool);
+                            break;
+                        case 14:
                             cell.setCellValue(cadreAppointmentAndRemovalApprovalInfo.job);
+                            break;
+                        case 15:
+                            cell.setCellValue(cadreAppointmentAndRemovalApprovalInfo.jiangcheng);
                             break;
                     }
                 }

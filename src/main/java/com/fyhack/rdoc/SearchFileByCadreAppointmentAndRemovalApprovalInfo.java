@@ -161,6 +161,13 @@ public class SearchFileByCadreAppointmentAndRemovalApprovalInfo {
         if (cadreAppointmentAndRemovalApprovalInfo!=null)
             cadreAppointmentAndRemovalApprovalInfo.birthplace = tmpString.value;
 
+        if(DEBUG) System.out.print("出生地: ");
+        String chushengdi_start_c = "出生地";
+        String chushengdi_end_c = "入党时间";
+        tmpString = printFindtxt(tmpString,chushengdi_start_c,chushengdi_end_c,false);
+        if (cadreAppointmentAndRemovalApprovalInfo!=null)
+            cadreAppointmentAndRemovalApprovalInfo.chushengdi = tmpString.value;
+
         if(DEBUG) System.out.print("入党时间: ");
         String partytime_start_c = "入党时间";
         String partytime_end_c = "参加工作";
@@ -216,6 +223,13 @@ public class SearchFileByCadreAppointmentAndRemovalApprovalInfo {
         tmpString = printFindtxt(tmpString,job_start_c,job_end_c,false);
         if (cadreAppointmentAndRemovalApprovalInfo!=null)
             cadreAppointmentAndRemovalApprovalInfo.job = tmpString.value;
+
+        if(DEBUG) System.out.print("奖惩情况: ");
+        String jiangchen_start_c = "奖惩情况";
+        String jiangchen_end_c = "年核度";
+        tmpString = printFindtxt(tmpString,jiangchen_start_c,jiangchen_end_c,false);
+        if (cadreAppointmentAndRemovalApprovalInfo!=null)
+            cadreAppointmentAndRemovalApprovalInfo.jiangcheng = tmpString.value;
 
         if (cadreAppointmentAndRemovalApprovalInfo!=null)
            list.add(cadreAppointmentAndRemovalApprovalInfo);
