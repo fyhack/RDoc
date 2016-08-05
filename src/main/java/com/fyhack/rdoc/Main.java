@@ -19,7 +19,7 @@ import java.util.ArrayList;
  * @since 2015/11/5
  */
 public class Main {
-    public static String file_path = "C:\\Users\\elc_simayi\\Desktop\\2";
+    public static String file_path = "C:\\Users\\elc_simayi\\Desktop\\src";
     public static String[] file_type = {"doc","docx"};
     public static String output_xls_file = "C:\\Users\\elc_simayi\\Desktop\\output\\product.xlsx";
     public static String muban_xls_file = "C:\\Users\\elc_simayi\\Desktop\\output\\CadreAppointmentAndRemovalApprovalInfo.xlsx"; //模板文件
