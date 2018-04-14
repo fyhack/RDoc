@@ -10,6 +10,7 @@ import org.apache.poi.xssf.usermodel.*;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Main
@@ -19,10 +20,11 @@ import java.util.ArrayList;
  * @since 2015/11/5
  */
 public class Main {
-    public static String file_path = "C:\\Users\\elc_simayi\\Desktop\\src";
+    public enum Mode {PersonnelArchivesSpecialAudit, CadreAppointmentAndRemovalApproval,Candidate}// 人事档案专项审计,干部免认审批,候选人信息
+    public static String file_path = "C:\\Users\\Fyhack\\Desktop\\src"; //将需要检索的文档放入该目录
     public static String[] file_type = {"doc","docx"};
-    public static String output_xls_file = "C:\\Users\\elc_simayi\\Desktop\\output\\product.xlsx";
-    public static String muban_xls_file = "C:\\Users\\elc_simayi\\Desktop\\output\\CadreAppointmentAndRemovalApprovalInfo.xlsx"; //模板文件
+    public static String output_xls_file = "C:\\Users\\Fyhack\\Desktop\\output\\product.xlsx"; //检索归类结果内容
+    public static String muban_xls_file = "C:\\Users\\Fyhack\\Desktop\\output\\CadreAppointmentAndRemovalApprovalInfo.xlsx"; //将检索归类后的模板文档放入该目录
 
     private static Workbook workbook;
     private static XSSFSheet sheet;
@@ -32,11 +34,11 @@ public class Main {
     private static StringBuffer stringBuffer;
 
     public static void main(String args[]){
-        System.out.println("检索程序开始: \t" + "目标文件夹位置 " + file_path + ",目标文件类型 " + file_type +
+        System.out.println("检索程序开始: \t" + "目标文件夹位置 " + file_path + ",目标文件类型 " + Arrays.toString(file_type) +
                 ", ps'本机系统编码 " + System.getProperty("file.encoding"));
-
-        switch (2){
-            case 1:
+        long start_time = System.currentTimeMillis();
+        switch (Mode.CadreAppointmentAndRemovalApproval){
+            case PersonnelArchivesSpecialAudit:
                 SearchFileByPersonnelArchivesSpecialAuditInfo searchFiles1 = new SearchFileByPersonnelArchivesSpecialAuditInfo(file_path,file_type);
                 ArrayList<PersonnelArchivesSpecialAuditInfo> list1 = (ArrayList<PersonnelArchivesSpecialAuditInfo>) searchFiles1.startSearchContent();
 //                for(int r=0;r<list1.size();r++){
@@ -46,7 +48,7 @@ public class Main {
 //                }
                 writeXSLToPersonnelArchivesSpecialAuditInfo(list1);
                 break;
-            case 2:
+            case CadreAppointmentAndRemovalApproval:
                 SearchFileByCadreAppointmentAndRemovalApprovalInfo searchFiles2 = new SearchFileByCadreAppointmentAndRemovalApprovalInfo(file_path,file_type);
                 ArrayList<CadreAppointmentAndRemovalApprovalInfo> list2 = (ArrayList<CadreAppointmentAndRemovalApprovalInfo>) searchFiles2.startSearchContent();
                 for(int r=0;r<list2.size();r++){
@@ -60,7 +62,7 @@ public class Main {
                 }
                 writeXSLToCadreAppointmentAndRemovalApprovalInfo(list2);
                 break;
-            case 3:
+            case Candidate:
                 SearchFileByCandidateInfo searchFiles3 = new SearchFileByCandidateInfo(file_path,file_type);
                 ArrayList<CandidateInfo> list3 = (ArrayList<CandidateInfo>) searchFiles3.startSearchContent();
                 for(CandidateInfo info : list3){
@@ -77,6 +79,7 @@ public class Main {
 //                writeXSLToCandidateInfo(list3);
                 break;
         }
+        System.out.println("检索耗时: " + (System.currentTimeMillis() - start_time) +"ms");
 
         //输出excel
 //        writeXSL(list);
